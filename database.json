@@ -1,0 +1,46 @@
+{
+  "sessions": [
+    {
+      "id": "SESI_13_00",
+      "jam": "13.00",
+      "label": "Sesi 1 - 13:00 WIB",
+      "fee": 5000,
+      "waGroup": "https://chat.whatsapp.com/test-sesi-1300",
+      "maxSlot": 18
+    },
+    {
+      "id": "SESI_15_00",
+      "jam": "15.00",
+      "label": "Sesi 2 - 15:00 WIB",
+      "fee": 5000,
+      "waGroup": "https://chat.whatsapp.com/test-sesi-1500",
+      "maxSlot": 18
+    },
+    {
+      "id": "SESI_17_00",
+      "jam": "17.00",
+      "label": "Sesi 3 - 17:00 WIB",
+      "fee": 5000,
+      "waGroup": "https://chat.whatsapp.com/test-sesi-1700",
+      "maxSlot": 18
+    },
+    {
+      "id": "SESI_19_30",
+      "jam": "19.30",
+      "label": "Sesi 4 - 19:30 WIB",
+      "fee": 5000,
+      "waGroup": "https://chat.whatsapp.com/test-sesi-1930",
+      "maxSlot": 18
+    },
+    {
+      "id": "SESI_21_30",
+      "jam": "21.30",
+      "label": "Sesi 5 - 21:30 WIB",
+      "fee": 5000,
+      "waGroup": "https://chat.whatsapp.com/test-sesi-2130",
+      "maxSlot": 18
+    }
+  ],
+  "registrations": [],
+  "notifLogs": []
+}

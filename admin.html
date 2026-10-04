@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAPIH GAMING - Admin Panel Turnamen</title>
+    <style>
+        :root {
+            --bg-dark: #0a0b12;
+            --panel-bg: #121524;
+            --card-bg: #1a1e33;
+            --border: #272d4a;
+            --primary: #ff2a5f;
+            --accent-green: #00f076;
+            --accent-blue: #00b4d8;
+            --text-main: #f0f2f5;
+            --text-muted: #8c95b0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-title {
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-title span {
+            color: var(--primary);
+        }
+
+        .btn-view-client {
+            background: #252c48;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-view-client:hover {
+            background: var(--primary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 900;
+            margin-top: 6px;
+            color: #fff;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Sessions Table / Form */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .session-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            display: grid;
+            grid-template-columns: 140px 140px 1fr 100px;
+            gap: 14px;
+            align-items: center;
+        }
+
+        @media (max-width: 800px) {
+            .session-item {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            background: #111424;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            padding: 9px 12px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-save-sessions {
+            background: var(--accent-green);
+            color: #061f10;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-save-sessions:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Registrations Table */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #171b30;
+            color: var(--text-muted);
+            text-align: left;
+            padding: 12px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            display: inline-block;
+        }
+
+        .badge-pending {
+            background: rgba(255, 179, 0, 0.15);
+            color: #ffb300;
+            border: 1px solid rgba(255, 179, 0, 0.3);
+        }
+
+        .badge-lunas {
+            background: rgba(0, 240, 118, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 240, 118, 0.3);
+        }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            background: #252c48;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .team-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-approve {
+            background: #00f076;
+            color: #051a0d;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .btn-delete {
+            background: #ff2a5f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .wa-link {
+            color: #00f076;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Notif Log Box */
+        .log-list {
+            background: #0d0f1a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            color: #00f076;
+        }
+
+        .log-item {
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #202742;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <div class="brand-title">
+            <span>⚡ PAPIH GAMING</span> ADMIN PANEL
+        </div>
+        <a href="/" target="_blank" class="btn-view-client">🔗 Buka Form Pendaftaran</a>
+    </div>
+
+    <!-- KONEKSI GOOGLE APPS SCRIPT UNTUK GITHUB PAGES -->
+    <div style="background:#171c32; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <span style="font-size:13px; font-weight:800; color:#00b4d8; white-space:nowrap;">🌐 URL Web App Google Script:</span>
+        <input type="text" id="inputGasUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec (Kosongkan jika pakai server localhost)" style="flex:1; min-width:250px;">
+        <button class="btn-view-client" style="background:#00b4d8; color:#061824;" onclick="saveGasUrl()">💾 Simpan URL Cloud</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Total Pendaftar</div>
+            <div class="stat-value" id="statTotalReg">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Sudah Lunas</div>
+            <div class="stat-value" style="color: var(--accent-green);" id="statTotalPaid">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Menunggu Bayar</div>
+            <div class="stat-value" style="color: #ffb300;" id="statTotalPending">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Total Uang Masuk</div>
+            <div class="stat-value" style="color: #00b4d8;" id="statTotalRevenue">Rp 0</div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-sessions')">⚙️ Pengelola Sesi & Link Grup WA</button>
+        <button class="tab-btn" onclick="switchTab('tab-teams')">👥 Data Tim Pendaftar</button>
+        <button class="tab-btn" onclick="switchTab('tab-notifs')">📡 Log Notifikasi HP (MacroDroid)</button>
+    </div>
+
+    <!-- TAB 1: PENGELOLA SESI & LINK GRUP WA -->
+    <div id="tab-sessions" class="tab-content active">
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Kelola Link Grup WhatsApp Per Jam Sesi</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
+                        Ubah link grup untuk masing-masing jam sesi di bawah ini. Saat tim bayar lunas, mereka otomatis diarahkan ke link jam sesi yang mereka pilih!
+                    </div>
+                </div>
+            </div>
+
+            <div id="sessionsContainer">
+                <!-- Session items rendered by JS -->
+            </div>
+
+            <button class="btn-save-sessions" onclick="saveSessions()">💾 SIMPAN PERUBAHAN SESI & LINK GRUP</button>
+        </div>
+    </div>
+
+    <!-- TAB 2: DATA TIM PENDAFTAR -->
+    <div id="tab-teams" class="tab-content">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Daftar Tim Pendaftar Realtime</div>
+                <button class="btn-view-client" onclick="loadAdminData()">🔄 Refresh Data</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tim</th>
+                            <th>Kapten</th>
+                            <th>No WA</th>
+                            <th>Jam Sesi</th>
+                            <th>Nominal</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamsTableBody">
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: LOG NOTIFIKASI MACRODROID -->
+    <div id="tab-notifs" class="tab-content">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Riwayat Notifikasi DANA dari HP</div>
+                <div style="font-size: 12px; color: #00f076;">● Terhubung ke MacroDroid HP</div>
+            </div>
+
+            <div class="log-list" id="notifLogBox">
+                [Belum ada notifikasi baru]
+            </div>
+
+            <div style="margin-top: 14px; display: flex; gap: 10px;">
+                <input type="text" id="simText" placeholder="Contoh: Kamu menerima transfer Rp 5012 dari..." value="Kamu menerima transfer Rp 5012 dari SULTAN">
+                <button class="btn-view-client" onclick="sendSimulatedNotif()">Kirim Notif Tiruan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let GAS_URL = localStorage.getItem("PAPIH_GAS_URL") || "https://script.google.com/macros/s/AKfycbzTfUGVc42_wqFYcJAySu2P8AmROGbG-QdFcKpgFOoASvRC41LCBHVhSUl4Absn5NiV/exec";
+    const LOCAL_SERVER = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
+
+    let adminData = { sessions: [], registrations: [], notifLogs: [] };
+
+    function saveGasUrl() {
+        const val = document.getElementById("inputGasUrl").value.trim();
+        GAS_URL = val;
+        localStorage.setItem("PAPIH_GAS_URL", val);
+        alert(val ? "URL Google Apps Script berhasil disimpan! Admin & Form Pendaftaran sekarang terhubung ke Cloud." : "URL Google Apps Script dikosongkan. Menggunakan server localhost.");
+        loadAdminData();
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    async function loadAdminData() {
+        try {
+            const url = GAS_URL ? `${GAS_URL}?action=getAdminData` : `${LOCAL_SERVER}/api/admin/data`;
+            const res = await fetch(url);
+            adminData = await res.json();
+            renderStats();
+            renderSessions();
+            renderTeams();
+            renderNotifLogs();
+        } catch (err) {
+            console.error("Gagal memuat data admin:", err);
+        }
+    }
+
+    function renderStats() {
+        const total = adminData.registrations.length;
+        const paid = adminData.registrations.filter(r => r.status === "LUNAS");
+        const pending = adminData.registrations.filter(r => r.status === "PENDING");
+        const revenue = paid.reduce((sum, r) => sum + (r.totalNominal || 0), 0);
+
+        document.getElementById("statTotalReg").innerText = total;
+        document.getElementById("statTotalPaid").innerText = paid.length;
+        document.getElementById("statTotalPending").innerText = pending.length;
+        document.getElementById("statTotalRevenue").innerText = "Rp " + revenue.toLocaleString('id-ID');
+    }
+
+    function renderSessions() {
+        const container = document.getElementById("sessionsContainer");
+        container.innerHTML = "";
+
+        adminData.sessions.forEach((s, idx) => {
+            const div = document.createElement("div");
+            div.className = "session-item";
+            div.innerHTML = `
+                <div class="field-group">
+                    <label>Jam Sesi</label>
+                    <input type="text" id="jam_${idx}" value="${s.jam || ''}" placeholder="13.00">
+                </div>
+                <div class="field-group">
+                    <label>Label Sesi</label>
+                    <input type="text" id="label_${idx}" value="${s.label || ''}" placeholder="Sesi 1">
+                </div>
+                <div class="field-group">
+                    <label>Link Grup WhatsApp (${s.jam || 'Sesi'})</label>
+                    <input type="text" id="wa_${idx}" value="${s.waGroup || ''}" placeholder="https://chat.whatsapp.com/...">
+                </div>
+                <div class="field-group">
+                    <label>Biaya (Rp)</label>
+                    <input type="number" id="fee_${idx}" value="${s.fee || 5000}">
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    async function saveSessions() {
+        const updated = adminData.sessions.map((s, idx) => {
+            return {
+                id: s.id,
+                jam: document.getElementById(`jam_${idx}`).value.trim(),
+                label: document.getElementById(`label_${idx}`).value.trim(),
+                waGroup: document.getElementById(`wa_${idx}`).value.trim(),
+                fee: parseInt(document.getElementById(`fee_${idx}`).value) || 5000,
+                maxSlot: s.maxSlot || 18
+            };
+        });
+
+        try {
+            let res;
+            if (GAS_URL) {
+                res = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'saveSessions', sessions: updated })
+                });
+            } else {
+                res = await fetch(`${LOCAL_SERVER}/api/admin/save-sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessions: updated })
+                });
+            }
+
+            const result = await res.json();
+            if (result.success) {
+                alert("Pengaturan sesi dan link grup WhatsApp berhasil disimpan!");
+                loadAdminData();
+            } else {
+                alert("Gagal menyimpan: " + result.message);
+            }
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    }
+
+    function renderTeams() {
+        const tbody = document.getElementById("teamsTableBody");
+        tbody.innerHTML = "";
+
+        if (adminData.registrations.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Belum ada pendaftaran tim.</td></tr>`;
+            return;
+        }
+
+        adminData.registrations.slice().reverse().forEach((reg) => {
+            const tr = document.createElement("tr");
+            const isLunas = reg.status === "LUNAS";
+            const logoHtml = reg.logo ? `<img src="${reg.logo}" alt="Logo">` : '🛡️';
+
+            tr.innerHTML = `
+                <td>
+                    <div class="team-cell">
+                        <div class="team-logo">${logoHtml}</div>
+                        <div>
+                            <b>${reg.teamName}</b>
+                            <div style="font-size: 11px; color: var(--text-muted);">${reg.time || ''}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${reg.captainNick}</td>
+                <td><a href="https://wa.me/${reg.captainWa.replace(/\D/g,'')}" target="_blank" class="wa-link">📱 ${reg.captainWa}</a></td>
+                <td><span style="color:#00b4d8; font-weight:700;">Jam ${reg.sessionJam || ''}</span></td>
+                <td><b style="color:var(--primary);">Rp ${reg.totalNominal.toLocaleString('id-ID')}</b></td>
+                <td>
+                    <span class="badge-status ${isLunas ? 'badge-lunas' : 'badge-pending'}">
+                        ${isLunas ? 'LUNAS ✓' : 'PENDING ⏳'}
+                    </span>
+                </td>
+                <td>
+                    ${!isLunas ? `<button class="btn-approve" onclick="manualApprove('${reg.regId}')">Lunas Manual</button>` : ''}
+                    <button class="btn-delete" onclick="deleteReg('${reg.regId}')">Hapus</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderNotifLogs() {
+        const box = document.getElementById("notifLogBox");
+        if (!adminData.notifLogs || adminData.notifLogs.length === 0) {
+            box.innerHTML = "[Belum ada notifikasi baru]";
+            return;
+        }
+
+        box.innerHTML = adminData.notifLogs.slice().reverse().map(l => {
+            return `<div class="log-item">[${l.time}] ${l.text}</div>`;
+        }).join("");
+    }
+
+    async function manualApprove(regId) {
+        if (!confirm("Tandai pendaftaran ini sebagai LUNAS manual?")) return;
+        if (GAS_URL) {
+            await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'manualApprove', regId: regId })
+            });
+        } else {
+            await fetch(`${LOCAL_SERVER}/api/admin/manual-approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ regId: regId })
+            });
+        }
+        loadAdminData();
+    }
+
+    async function deleteReg(regId) {
+        if (!confirm("Hapus data pendaftaran tim ini?")) return;
+        if (GAS_URL) {
+            await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'deleteReg', regId: regId })
+            });
+        } else {
+            await fetch(`${LOCAL_SERVER}/api/admin/delete-reg`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ regId: regId })
+            });
+        }
+        loadAdminData();
+    }
+
+    async function sendSimulatedNotif() {
+        const text = document.getElementById("simText").value;
+        const targetUrl = GAS_URL ? `${GAS_URL}?action=notif&text=${encodeURIComponent(text)}` : `${LOCAL_SERVER}/notif?text=${encodeURIComponent(text)}`;
+        await fetch(targetUrl);
+        loadAdminData();
+    }
+
+    window.onload = function() {
+        if (GAS_URL) {
+            document.getElementById("inputGasUrl").value = GAS_URL;
+        }
+        loadAdminData();
+        setInterval(loadAdminData, 3000);
+    };
+</script>
+
+</body>
+</html>

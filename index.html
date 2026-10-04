@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAPIH GAMING - Pendaftaran Scrim Free Fire</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0c13;
+            --card-bg: #131522;
+            --border: #222638;
+            --primary: #ff2a5f;
+            --primary-glow: rgba(255, 42, 95, 0.4);
+            --accent-green: #00f076;
+            --accent-green-glow: rgba(0, 240, 118, 0.4);
+            --text-main: #f0f2f5;
+            --text-muted: #8c93a8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .badge {
+            background: rgba(255, 42, 95, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(255, 42, 95, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 12px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="tel"], select {
+            width: 100%;
+            background: #191c2b;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            padding: 11px 14px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Upload Logo Box */
+        .logo-upload-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #191c2b;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .logo-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #252a3d;
+            border: 1px solid #333952;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 20px;
+            color: #656d8a;
+            flex-shrink: 0;
+        }
+
+        .logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-input-info {
+            flex: 1;
+        }
+
+        .logo-input-info input[type="file"] {
+            display: none;
+        }
+
+        .btn-choose-file {
+            background: #252a3d;
+            color: #b0bcd6;
+            border: 1px solid #333952;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-choose-file:hover {
+            background: #313852;
+            color: #fff;
+        }
+
+        .file-name-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 250px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #ff2a5f, #c71441);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px var(--primary-glow);
+            transition: all 0.2s;
+            margin-top: 14px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px var(--primary-glow);
+        }
+
+        /* Step Payment */
+        .step-box {
+            display: none;
+            text-align: center;
+        }
+
+        .pay-nominal {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 6px 0 2px;
+        }
+
+        .pay-breakdown {
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .qr-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px;
+            margin: 14px auto;
+            display: inline-block;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .qr-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .qris-tag {
+            font-weight: 900;
+            color: #c9184a;
+            font-size: 15px;
+        }
+
+        .dana-tag {
+            background: #118eea;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 179, 0, 0.15);
+            color: #ffb300;
+            border: 1px solid rgba(255, 179, 0, 0.3);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .dot-pulse {
+            width: 8px;
+            height: 8px;
+            background: #ffb300;
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        /* Step Success */
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 240, 118, 0.15);
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin: 0 auto 14px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-wa-group {
+            background: linear-gradient(135deg, #00f076, #00b85b);
+            color: #05140b;
+            font-size: 15px;
+            font-weight: 900;
+            text-decoration: none;
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: block;
+            margin-top: 18px;
+            box-shadow: 0 4px 20px var(--accent-green-glow);
+            transition: all 0.2s;
+        }
+
+        .btn-wa-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px var(--accent-green-glow);
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+        }
+
+        .admin-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .admin-link a:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="badge">PAPIH GAMING</span>
+        <h1>PENDAFTARAN SCRIM FF</h1>
+        <div class="sub">Pembayaran Otomatis DANA & Akses Langsung Grup WhatsApp</div>
+    </div>
+
+    <!-- 1. FORM PENDAFTARAN -->
+    <div id="step-form">
+        <div class="form-group">
+            <label>Nama Tim</label>
+            <input type="text" id="teamName" placeholder="Contoh: RRQ HOSHI" required>
+        </div>
+
+        <div class="form-group">
+            <label>Nick Kapten</label>
+            <input type="text" id="captainNick" placeholder="Contoh: RRQ Legendaris" required>
+        </div>
+
+        <div class="form-group">
+            <label>Nomor WhatsApp Kapten</label>
+            <input type="tel" id="captainWa" placeholder="Contoh: 081234567890" required>
+        </div>
+
+        <div class="form-group">
+            <label>Logo Tim (Opsional)</label>
+            <div class="logo-upload-wrap">
+                <div class="logo-preview" id="logoPreviewBox">🛡️</div>
+                <div class="logo-input-info">
+                    <label for="logoInput" class="btn-choose-file">Pilih Gambar Logo</label>
+                    <input type="file" id="logoInput" accept="image/*" onchange="previewLogo(event)">
+                    <div class="file-name-label" id="fileNameLabel">Belum ada logo dipilih</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Pilih Jam Sesi Scrim</label>
+            <select id="sessionSelect" onchange="updateSelectedSessionInfo()">
+                <option value="">Memuat daftar sesi...</option>
+            </select>
+        </div>
+
+        <button class="btn-submit" onclick="submitRegistration()">DAFTAR & BAYAR SEKARANG</button>
+    </div>
+
+    <!-- 2. PEMBAYARAN QRIS OTOMATIS -->
+    <div id="step-payment" class="step-box">
+        <div style="font-size: 13px; color: var(--text-muted);">Silakan Scan & Bayar Tepat Nominal Berikut:</div>
+        <div class="pay-nominal" id="displayTotalPay">Rp 5.000</div>
+        <div class="pay-breakdown" id="displayBreakdown">Biaya: Rp 5.000 + Kode Unik Otomatis: Rp 0</div>
+        <div style="font-size: 11px; color: #ff9800;">*Nominal sudah terkunci otomatis saat discan</div>
+
+        <div class="qr-card">
+            <div class="qr-header">
+                <span class="qris-tag">QRIS</span>
+                <span class="dana-tag">ZONA OUTDOOR</span>
+            </div>
+            <div id="qrcode"></div>
+        </div>
+
+        <div>
+            <div class="status-pill">
+                <div class="dot-pulse"></div>
+                <span>Menunggu Notifikasi DANA Masuk...</span>
+            </div>
+        </div>
+
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            Sistem otomatis membaca transferan dari HP. Begitu bayar, halaman ini langsung membuka link grup!
+        </p>
+    </div>
+
+    <!-- 3. PEMBAYARAN SUKSES & LINK GRUP -->
+    <div id="step-success" class="step-box">
+        <div class="success-icon">✓</div>
+        <h2 style="color: var(--accent-green); font-size: 20px; font-weight: 800;">PEMBAYARAN SUKSES!</h2>
+        
+        <div style="margin: 12px 0 6px; font-size: 14px; color: var(--text-muted);">
+            Pembayaran untuk tim <b id="successTeamName" style="color: #fff;"></b> telah lunas.
+        </div>
+
+        <div style="background: rgba(0, 240, 118, 0.08); border: 1px solid rgba(0, 240, 118, 0.2); border-radius: 10px; padding: 12px; margin-top: 12px;">
+            <p style="font-size: 13px; color: var(--accent-green); font-weight: 700;" id="successSessionNotice">
+                Ini link grup jam sesi yang Anda pilih:
+            </p>
+        </div>
+
+        <a id="btnWaGroupDirect" href="#" target="_blank" class="btn-wa-group">
+            👉 MASUK KE GRUP WHATSAPP SEKARANG
+        </a>
+
+        <div style="margin-top: 14px; font-size: 12px; color: #777;">
+            Mengalihkan otomatis ke WhatsApp dalam <span id="countdown">3</span> detik...
+        </div>
+    </div>
+
+    <div class="admin-link">
+        <a href="/admin">⚙️ Masuk ke Dashboard Admin</a>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // KONFIGURASI BACKEND (Mendukung GitHub Pages via Google Apps Script)
+    // =========================================================================
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzTfUGVc42_wqFYcJAySu2P8AmROGbG-QdFcKpgFOoASvRC41LCBHVhSUl4Absn5NiV/exec";
+    const LOCAL_SERVER = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
+    const API_BASE = GAS_URL ? GAS_URL : LOCAL_SERVER;
+    const baseQRIS = "00020101021126570011ID.DANA.WWW011893600915315721884402091572188440303UMI51440014ID.CO.QRIS.WWW0215ID10210809421340303UMI5204739453033605802ID5912ZONA OUTDOOR6013Kota Makassar61059015463044005";
+
+    let availableSessions = [];
+    let currentRegId = null;
+    let pollTimer = null;
+    let uploadedLogoBase64 = "";
+
+    function crc16(data) {
+        let crc = 0xFFFF;
+        for (let i = 0; i < data.length; i++) {
+            crc ^= (data.charCodeAt(i) << 8);
+            for (let j = 0; j < 8; j++) {
+                crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+                crc &= 0xFFFF;
+            }
+        }
+        return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function generateDynamicQRIS(qrisStatis, nominal) {
+        let qris = qrisStatis.slice(0, -4);
+        qris = qris.replace("010211", "010212");
+        const nominalStr = nominal.toString();
+        const tag54 = "54" + nominalStr.length.toString().padStart(2, '0') + nominalStr;
+        const pos58 = qris.indexOf("5802ID");
+        const newBody = qris.slice(0, pos58) + tag54 + qris.slice(pos58);
+        return newBody + crc16(newBody);
+    }
+
+    function previewLogo(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        document.getElementById("fileNameLabel").innerText = file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedLogoBase64 = e.target.result;
+            document.getElementById("logoPreviewBox").innerHTML = `<img src="${uploadedLogoBase64}" alt="Logo">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function loadSessions() {
+        try {
+            const url = GAS_URL ? `${GAS_URL}?action=getSessions` : `${LOCAL_SERVER}/api/sessions`;
+            const res = await fetch(url);
+            const data = await res.json();
+            availableSessions = data.sessions || [];
+            
+            const select = document.getElementById("sessionSelect");
+            select.innerHTML = "";
+            availableSessions.forEach((s) => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.innerText = `${s.label} - Rp ${s.fee.toLocaleString('id-ID')}`;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            console.error("Gagal memuat sesi:", err);
+        }
+    }
+
+    function updateSelectedSessionInfo() {
+        // Option change handler if needed
+    }
+
+    async function submitRegistration() {
+        const teamName = document.getElementById("teamName").value.trim();
+        const captainNick = document.getElementById("captainNick").value.trim();
+        const captainWa = document.getElementById("captainWa").value.trim();
+        const sessionId = document.getElementById("sessionSelect").value;
+
+        if (!teamName || !captainNick || !captainWa) {
+            alert("Harap isi Nama Tim, Nick Kapten, dan Nomor WhatsApp!");
+            return;
+        }
+
+        const selectedSession = availableSessions.find(s => s.id === sessionId);
+        const baseFee = selectedSession ? selectedSession.fee : 5000;
+
+        // Kirim pendaftaran ke backend (Google Apps Script atau Local)
+        try {
+            let resp;
+            if (GAS_URL) {
+                const regUrl = `${GAS_URL}?action=register&teamName=${encodeURIComponent(teamName)}&captainNick=${encodeURIComponent(captainNick)}&captainWa=${encodeURIComponent(captainWa)}&sessionId=${encodeURIComponent(sessionId)}&baseFee=${baseFee}`;
+                resp = await fetch(regUrl);
+            } else {
+                resp = await fetch(`${LOCAL_SERVER}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        teamName: teamName,
+                        captainNick: captainNick,
+                        captainWa: captainWa,
+                        logo: uploadedLogoBase64,
+                        sessionId: sessionId,
+                        baseFee: baseFee
+                    })
+                });
+            }
+
+            const result = await resp.json();
+            if (!result.success) {
+                alert("Gagal mendaftar: " + result.message);
+                return;
+            }
+
+            currentRegId = result.regId;
+            showPaymentScreen(result);
+        } catch (err) {
+            alert("Koneksi ke server gagal: " + err.message);
+        }
+    }
+
+    function showPaymentScreen(data) {
+        document.getElementById("step-form").style.display = "none";
+        document.getElementById("step-payment").style.display = "block";
+
+        document.getElementById("displayTotalPay").innerText = "Rp " + data.totalNominal.toLocaleString('id-ID');
+        document.getElementById("displayBreakdown").innerText = `Biaya Slot: Rp ${data.baseFee.toLocaleString('id-ID')} + Kode Unik Otomatis: Rp ${data.kodeUnik}`;
+
+        // Render QR Code
+        const qrisString = generateDynamicQRIS(baseQRIS, data.totalNominal);
+        const qrContainer = document.getElementById("qrcode");
+        qrContainer.innerHTML = "";
+
+        let rendered = false;
+        try {
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContainer, {
+                    text: qrisString,
+                    width: 210,
+                    height: 210,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.L
+                });
+                rendered = true;
+            }
+        } catch (e) {}
+
+        const canvas = qrContainer.querySelector("canvas") || qrContainer.querySelector("img");
+        if (!rendered || !canvas) {
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=${encodeURIComponent(qrisString)}" width="210" height="210" alt="QRIS Code" style="display:block; margin:0 auto; border-radius:4px;" />`;
+        }
+
+        // Mulai memantau notifikasi DANA yang masuk
+        startPaymentMonitoring();
+    }
+
+    function startPaymentMonitoring() {
+        if (pollTimer) clearInterval(pollTimer);
+
+        pollTimer = setInterval(async () => {
+            try {
+                const checkUrl = GAS_URL ? `${GAS_URL}?action=checkStatus&regId=${currentRegId}` : `${LOCAL_SERVER}/api/check-status?regId=${currentRegId}`;
+                const res = await fetch(checkUrl);
+                const data = await res.json();
+
+                if (data.status === "LUNAS") {
+                    clearInterval(pollTimer);
+                    onSuccessPaid(data);
+                }
+            } catch (e) {}
+        }, 1500);
+    }
+
+    function onSuccessPaid(data) {
+        document.getElementById("step-payment").style.display = "none";
+        document.getElementById("step-success").style.display = "block";
+
+        document.getElementById("successTeamName").innerText = data.teamName;
+        document.getElementById("successSessionNotice").innerText = `Ini link grup jam sesi ${data.sessionJam || data.sessionLabel} yang Anda pilih:`;
+
+        const waBtn = document.getElementById("btnWaGroupDirect");
+        waBtn.href = data.waGroup;
+
+        // Auto Redirect dalam 3 detik
+        let count = 3;
+        const cd = document.getElementById("countdown");
+        const timer = setInterval(() => {
+            count--;
+            if (cd) cd.innerText = count;
+            if (count <= 0) {
+                clearInterval(timer);
+                window.location.href = data.waGroup;
+            }
+        }, 1000);
+    }
+
+    window.onload = function() {
+        loadSessions();
+    };
+</script>
+
+</body>
+</html>
