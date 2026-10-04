@@ -371,9 +371,23 @@
         </div>
 
         <div class="form-group">
-            <label>Pilih Jam Sesi Scrim</label>
+            <label>Pilih Jam Sesi Scrim (Pilih Jam Tanding)</label>
             <select id="sessionSelect" onchange="updateSelectedSessionInfo()">
-                <option value="">Memuat daftar sesi...</option>
+                <option value="SESI_10_00">Sesi 10:00 WIB - Rp 5.000</option>
+                <option value="SESI_11_00">Sesi 11:00 WIB - Rp 5.000</option>
+                <option value="SESI_12_00">Sesi 12:00 WIB - Rp 5.000</option>
+                <option value="SESI_13_00">Sesi 13:00 WIB - Rp 5.000</option>
+                <option value="SESI_14_00">Sesi 14:00 WIB - Rp 5.000</option>
+                <option value="SESI_15_00">Sesi 15:00 WIB - Rp 5.000</option>
+                <option value="SESI_16_00">Sesi 16:00 WIB - Rp 5.000</option>
+                <option value="SESI_17_00">Sesi 17:00 WIB - Rp 5.000</option>
+                <option value="SESI_19_00">Sesi 19:00 WIB - Rp 5.000</option>
+                <option value="SESI_20_00">Sesi 20:00 WIB - Rp 5.000</option>
+                <option value="SESI_21_00">Sesi 21:00 WIB - Rp 5.000</option>
+                <option value="SESI_22_00">Sesi 22:00 WIB - Rp 5.000</option>
+                <option value="SESI_23_00">Sesi 23:00 WIB - Rp 5.000</option>
+                <option value="SESI_00_00">Sesi 00:00 WIB (Midnight) - Rp 5.000</option>
+                <option value="SESI_01_00">Sesi 01:00 WIB (Late Night) - Rp 5.000</option>
             </select>
         </div>
 
@@ -440,12 +454,30 @@
     // =========================================================================
     // KONFIGURASI BACKEND (Mendukung GitHub Pages via Google Apps Script)
     // =========================================================================
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzTfUGVc42_wqFYcJAySu2P8AmROGbG-QdFcKpgFOoASvRC41LCBHVhSUl4Absn5NiV/exec";
+    const GAS_URL = localStorage.getItem("PAPIH_GAS_URL") || "https://script.google.com/macros/s/AKfycbzTfUGVc42_wqFYcJAySu2P8AmROGbG-QdFcKpgFOoASvRC41LCBHVhSUl4Absn5NiV/exec";
     const LOCAL_SERVER = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
     const API_BASE = GAS_URL ? GAS_URL : LOCAL_SERVER;
     const baseQRIS = "00020101021126570011ID.DANA.WWW011893600915315721884402091572188440303UMI51440014ID.CO.QRIS.WWW0215ID10210809421340303UMI5204739453033605802ID5912ZONA OUTDOOR6013Kota Makassar61059015463044005";
 
-    let availableSessions = [];
+    const DEFAULT_15_SESSIONS = [
+        { id: "SESI_10_00", jam: "10.00", label: "Sesi 10:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1000", maxSlot: 18, isActive: true },
+        { id: "SESI_11_00", jam: "11.00", label: "Sesi 11:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1100", maxSlot: 18, isActive: true },
+        { id: "SESI_12_00", jam: "12.00", label: "Sesi 12:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1200", maxSlot: 18, isActive: true },
+        { id: "SESI_13_00", jam: "13.00", label: "Sesi 13:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1300", maxSlot: 18, isActive: true },
+        { id: "SESI_14_00", jam: "14.00", label: "Sesi 14:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1400", maxSlot: 18, isActive: true },
+        { id: "SESI_15_00", jam: "15.00", label: "Sesi 15:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1500", maxSlot: 18, isActive: true },
+        { id: "SESI_16_00", jam: "16.00", label: "Sesi 16:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1600", maxSlot: 18, isActive: true },
+        { id: "SESI_17_00", jam: "17.00", label: "Sesi 17:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1700", maxSlot: 18, isActive: true },
+        { id: "SESI_19_00", jam: "19.00", label: "Sesi 19:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1900", maxSlot: 18, isActive: true },
+        { id: "SESI_20_00", jam: "20.00", label: "Sesi 20:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2000", maxSlot: 18, isActive: true },
+        { id: "SESI_21_00", jam: "21.00", label: "Sesi 21:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2100", maxSlot: 18, isActive: true },
+        { id: "SESI_22_00", jam: "22.00", label: "Sesi 22:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2200", maxSlot: 18, isActive: true },
+        { id: "SESI_23_00", jam: "23.00", label: "Sesi 23:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2300", maxSlot: 18, isActive: true },
+        { id: "SESI_00_00", jam: "00.00", label: "Sesi 00:00 WIB (Midnight)", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-0000", maxSlot: 18, isActive: true },
+        { id: "SESI_01_00", jam: "01.00", label: "Sesi 01:00 WIB (Late Night)", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-0100", maxSlot: 18, isActive: true }
+    ];
+
+    let availableSessions = DEFAULT_15_SESSIONS;
     let currentRegId = null;
     let pollTimer = null;
     let uploadedLogoBase64 = "";
@@ -484,23 +516,57 @@
         reader.readAsDataURL(file);
     }
 
+    function formatJam(jam) {
+        if (jam === undefined || jam === null || jam === "") return "";
+        let str = String(jam).trim();
+        if (/^\d{1,2}$/.test(str)) {
+            return str.padStart(2, '0') + '.00';
+        }
+        if (/^\d{1,2}\.\d$/.test(str)) {
+            return str + '0';
+        }
+        return str;
+    }
+
+    function renderSessionOptions() {
+        const select = document.getElementById("sessionSelect");
+        if (!select) return;
+        select.innerHTML = "";
+
+        if (availableSessions.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.innerText = "Belum ada sesi yang dibuka saat ini";
+            select.appendChild(opt);
+            return;
+        }
+
+        availableSessions.forEach((s) => {
+            const opt = document.createElement("option");
+            opt.value = s.id;
+            const jamStr = formatJam(s.jam);
+            const feeNum = parseInt(s.fee) || 5000;
+            const labelStr = s.label || `Sesi ${jamStr} WIB`;
+            opt.innerText = `${labelStr} - Rp ${feeNum.toLocaleString('id-ID')}`;
+            select.appendChild(opt);
+        });
+    }
+
     async function loadSessions() {
         try {
             const url = GAS_URL ? `${GAS_URL}?action=getSessions` : `${LOCAL_SERVER}/api/sessions`;
             const res = await fetch(url);
             const data = await res.json();
-            availableSessions = data.sessions || [];
             
-            const select = document.getElementById("sessionSelect");
-            select.innerHTML = "";
-            availableSessions.forEach((s) => {
-                const opt = document.createElement("option");
-                opt.value = s.id;
-                opt.innerText = `${s.label} - Rp ${s.fee.toLocaleString('id-ID')}`;
-                select.appendChild(opt);
-            });
+            // Hanya tampilkan sesi yang statusnya AKTIF (bukan yang disembunyikan admin)
+            if (data && data.sessions && data.sessions.length > 0) {
+                availableSessions = data.sessions.filter(s => s.isActive !== false && s.isActive !== "false");
+            }
+            renderSessionOptions();
         } catch (err) {
-            console.error("Gagal memuat sesi:", err);
+            console.warn("Menggunakan sesi default lokal:", err);
+            availableSessions = DEFAULT_15_SESSIONS;
+            renderSessionOptions();
         }
     }
 
@@ -614,7 +680,7 @@
         document.getElementById("step-success").style.display = "block";
 
         document.getElementById("successTeamName").innerText = data.teamName;
-        document.getElementById("successSessionNotice").innerText = `Ini link grup jam sesi ${data.sessionJam || data.sessionLabel} yang Anda pilih:`;
+        document.getElementById("successSessionNotice").innerText = `Ini link grup jam sesi ${formatJam(data.sessionJam) || data.sessionLabel || ''} yang Anda pilih:`;
 
         const waBtn = document.getElementById("btnWaGroupDirect");
         waBtn.href = data.waGroup;
