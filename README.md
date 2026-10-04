@@ -50,12 +50,7 @@ Agar notifikasi transfer DANA otomatis mengubah status tim jadi **LUNAS** (bisa 
 
 ## ⚙️ Mengatur Link Grup WhatsApp Per Jam Sesi
 
-1. Masuk ke [`http://localhost:8080/admin`](http://localhost:8080/admin).
-2. Di tab **Pengelola Sesi & Link Grup WA**, masukkan link undangan grup WhatsApp untuk masing-masing jam:
-   - Jam 13.00
-   - Jam 15.00
-   - Jam 17.00
-   - Jam 19.30
-   - Jam 21.30
-3. Klik tombol hijau: **`SIMPAN PERUBAHAN SESI & LINK GRUP`**.
+1. Masuk ke [`http://localhost:8080/admin`](http://localhost:8080/admin) (Sandi default: `papihadmin2026`).
+2. Di tab **Pengelola Sesi & Link Grup WA**, terdapat 15 sesi (Jam 10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00, 17.00, 19.00, 20.00, 21.00, 22.00, 23.00, 00.00 Midnight, 01.00 Late Night).
+3. Anda bisa mengaktifkan/menyembunyikan sesi, mengganti link grup WhatsApp masing-masing jam, lalu klik tombol: **`SIMPAN PERUBAHAN SESI & LINK GRUP`**.
 4. Kapan pun ada tim yang membayar untuk sesi jam tersebut, mereka akan langsung otomatis diarahkan ke link grup jam yang mereka pilih!
