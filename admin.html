@@ -160,15 +160,22 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             display: grid;
-            grid-template-columns: 140px 140px 1fr 100px;
-            gap: 14px;
+            grid-template-columns: 85px 150px 1fr 90px 130px;
+            gap: 12px;
             align-items: center;
+            transition: all 0.2s;
         }
 
-        @media (max-width: 800px) {
+        .session-item.hidden-session {
+            opacity: 0.5;
+            background: #0e101a;
+            border-color: #1a1e30;
+        }
+
+        @media (max-width: 850px) {
             .session-item {
                 grid-template-columns: 1fr;
             }
@@ -341,12 +348,30 @@
 </head>
 <body>
 
+<!-- LOGIN OVERLAY PENGAMAN ADMIN -->
+<div id="loginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,11,18,0.96); z-index:9999; display:flex; justify-content:center; align-items:center; padding:16px;">
+    <div style="background:#131524; border:1px solid #272d4a; border-radius:18px; padding:32px 26px; max-width:380px; width:100%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+        <div style="font-size:42px; margin-bottom:12px;">🔒</div>
+        <h2 style="font-size:20px; font-weight:800; color:#fff; margin-bottom:6px;">LOGIN ADMIN PANEL</h2>
+        <p style="font-size:12px; color:#8c95b0; margin-bottom:20px;">Masukkan kata sandi admin untuk mengakses data turnamen:</p>
+        
+        <input type="password" id="adminPassInput" placeholder="Masukkan Sandi..." style="width:100%; background:#1a1e33; border:1px solid #272d4a; border-radius:10px; color:#fff; padding:12px; font-size:14px; margin-bottom:14px; text-align:center; outline:none;" onkeydown="if(event.key==='Enter') verifyAdminLogin()">
+        
+        <div id="loginError" style="display:none; color:#ff2a5f; font-size:12px; margin-bottom:12px; font-weight:700;">Kata sandi salah! Coba lagi.</div>
+        
+        <button onclick="verifyAdminLogin()" style="width:100%; background:linear-gradient(135deg, #ff2a5f, #c71441); color:#fff; border:none; border-radius:10px; padding:12px; font-weight:800; font-size:14px; cursor:pointer;">MASUK KE DASHBOARD</button>
+    </div>
+</div>
+
 <div class="container">
     <div class="top-nav">
         <div class="brand-title">
             <span>⚡ PAPIH GAMING</span> ADMIN PANEL
         </div>
-        <a href="/" target="_blank" class="btn-view-client">🔗 Buka Form Pendaftaran</a>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <a href="/" target="_blank" class="btn-view-client">🔗 Buka Form Pendaftaran</a>
+            <button onclick="adminLogout()" class="btn-view-client" style="background:#ff2a5f; border:none; cursor:pointer;">Keluar (Logout)</button>
+        </div>
     </div>
 
     <!-- KONEKSI GOOGLE APPS SCRIPT UNTUK GITHUB PAGES -->
@@ -386,12 +411,16 @@
     <!-- TAB 1: PENGELOLA SESI & LINK GRUP WA -->
     <div id="tab-sessions" class="tab-content active">
         <div class="panel">
-            <div class="panel-header">
+            <div class="panel-header" style="flex-wrap:wrap; gap:10px;">
                 <div>
-                    <div class="panel-title">Kelola Link Grup WhatsApp Per Jam Sesi</div>
+                    <div class="panel-title">Kelola Link Grup WhatsApp Per Jam Sesi (15 Jam Sesi)</div>
                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
-                        Ubah link grup untuk masing-masing jam sesi di bawah ini. Saat tim bayar lunas, mereka otomatis diarahkan ke link jam sesi yang mereka pilih!
+                        Ubah link grup untuk masing-masing jam sesi di bawah ini. Sesi yang disembunyikan tidak akan muncul di form pendaftaran pendaftar.
                     </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn-view-client" style="font-size:11px; padding:6px 12px; background:#162e22; color:#00f076; border:1px solid rgba(0,240,118,0.4);" onclick="toggleAllSessions(true)">🟢 Tampilkan Semua</button>
+                    <button type="button" class="btn-view-client" style="font-size:11px; padding:6px 12px; background:#331722; color:#ff2a5f; border:1px solid rgba(255,42,95,0.4);" onclick="toggleAllSessions(false)">⚪ Sembunyikan Semua</button>
                 </div>
             </div>
 
@@ -453,10 +482,58 @@
 </div>
 
 <script>
+    // URL Google Apps Script Backend Cloud & Server Lokal
     let GAS_URL = localStorage.getItem("PAPIH_GAS_URL") || "https://script.google.com/macros/s/AKfycbzTfUGVc42_wqFYcJAySu2P8AmROGbG-QdFcKpgFOoASvRC41LCBHVhSUl4Absn5NiV/exec";
     const LOCAL_SERVER = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
 
-    let adminData = { sessions: [], registrations: [], notifLogs: [] };
+    // Kata sandi admin default (bisa Anda ubah di sini atau disimpan di browser)
+    const DEFAULT_ADMIN_PASS = "papihadmin2026";
+
+    function checkLoginState() {
+        if (sessionStorage.getItem("papihAdminAuth") === "true") {
+            document.getElementById("loginOverlay").style.display = "none";
+            loadAdminData();
+        } else {
+            document.getElementById("loginOverlay").style.display = "flex";
+        }
+    }
+
+    function verifyAdminLogin() {
+        const input = document.getElementById("adminPassInput").value.trim();
+        const savedPass = localStorage.getItem("PAPIH_CUSTOM_PASS") || DEFAULT_ADMIN_PASS;
+        if (input === savedPass) {
+            sessionStorage.setItem("papihAdminAuth", "true");
+            document.getElementById("loginOverlay").style.display = "none";
+            loadAdminData();
+        } else {
+            document.getElementById("loginError").style.display = "block";
+        }
+    }
+
+    function adminLogout() {
+        sessionStorage.removeItem("papihAdminAuth");
+        location.reload();
+    }
+
+    const DEFAULT_15_SESSIONS = [
+        { id: "SESI_10_00", jam: "10.00", label: "Sesi 10:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1000", maxSlot: 18, isActive: true },
+        { id: "SESI_11_00", jam: "11.00", label: "Sesi 11:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1100", maxSlot: 18, isActive: true },
+        { id: "SESI_12_00", jam: "12.00", label: "Sesi 12:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1200", maxSlot: 18, isActive: true },
+        { id: "SESI_13_00", jam: "13.00", label: "Sesi 13:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1300", maxSlot: 18, isActive: true },
+        { id: "SESI_14_00", jam: "14.00", label: "Sesi 14:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1400", maxSlot: 18, isActive: true },
+        { id: "SESI_15_00", jam: "15.00", label: "Sesi 15:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1500", maxSlot: 18, isActive: true },
+        { id: "SESI_16_00", jam: "16.00", label: "Sesi 16:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1600", maxSlot: 18, isActive: true },
+        { id: "SESI_17_00", jam: "17.00", label: "Sesi 17:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1700", maxSlot: 18, isActive: true },
+        { id: "SESI_19_00", jam: "19.00", label: "Sesi 19:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-1900", maxSlot: 18, isActive: true },
+        { id: "SESI_20_00", jam: "20.00", label: "Sesi 20:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2000", maxSlot: 18, isActive: true },
+        { id: "SESI_21_00", jam: "21.00", label: "Sesi 21:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2100", maxSlot: 18, isActive: true },
+        { id: "SESI_22_00", jam: "22.00", label: "Sesi 22:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2200", maxSlot: 18, isActive: true },
+        { id: "SESI_23_00", jam: "23.00", label: "Sesi 23:00 WIB", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-2300", maxSlot: 18, isActive: true },
+        { id: "SESI_00_00", jam: "00.00", label: "Sesi 00:00 WIB (Midnight)", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-0000", maxSlot: 18, isActive: true },
+        { id: "SESI_01_00", jam: "01.00", label: "Sesi 01:00 WIB (Late Night)", fee: 5000, waGroup: "https://chat.whatsapp.com/test-sesi-0100", maxSlot: 18, isActive: true }
+    ];
+
+    let adminData = { sessions: DEFAULT_15_SESSIONS, registrations: [], notifLogs: [] };
 
     function saveGasUrl() {
         const val = document.getElementById("inputGasUrl").value.trim();
@@ -478,14 +555,49 @@
         try {
             const url = GAS_URL ? `${GAS_URL}?action=getAdminData` : `${LOCAL_SERVER}/api/admin/data`;
             const res = await fetch(url);
-            adminData = await res.json();
+            const data = await res.json();
+            if (data && data.sessions && data.sessions.length > 0) {
+                adminData = data;
+            }
             renderStats();
             renderSessions();
             renderTeams();
             renderNotifLogs();
         } catch (err) {
-            console.error("Gagal memuat data admin:", err);
+            console.warn("Gagal memuat data admin, menggunakan fallback:", err);
+            renderStats();
+            renderSessions();
+            renderTeams();
+            renderNotifLogs();
         }
+    }
+
+    function formatJam(jam) {
+        if (jam === undefined || jam === null || jam === "") return "";
+        let str = String(jam).trim();
+        if (/^\d{1,2}$/.test(str)) {
+            return str.padStart(2, '0') + '.00';
+        }
+        if (/^\d{1,2}\.\d$/.test(str)) {
+            return str + '0';
+        }
+        return str;
+    }
+
+    function formatWa(phone) {
+        if (!phone) return '';
+        let clean = String(phone).replace(/\D/g, '');
+        if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+        else if (clean.startsWith('8')) clean = '62' + clean;
+        return clean;
+    }
+
+    function displayWa(phone) {
+        if (!phone) return '-';
+        let clean = String(phone).replace(/\D/g, '');
+        if (clean.startsWith('62')) clean = '0' + clean.slice(2);
+        else if (clean.startsWith('8')) clean = '0' + clean;
+        return clean;
     }
 
     function renderStats() {
@@ -505,39 +617,97 @@
         container.innerHTML = "";
 
         adminData.sessions.forEach((s, idx) => {
+            const isAct = (s.isActive !== false && s.isActive !== "false");
+            const jamStr = formatJam(s.jam);
             const div = document.createElement("div");
-            div.className = "session-item";
+            div.className = `session-item ${isAct ? '' : 'hidden-session'}`;
+            div.id = `session_card_${idx}`;
             div.innerHTML = `
                 <div class="field-group">
                     <label>Jam Sesi</label>
-                    <input type="text" id="jam_${idx}" value="${s.jam || ''}" placeholder="13.00">
+                    <input type="text" id="jam_${idx}" value="${jamStr}" placeholder="13.00">
                 </div>
                 <div class="field-group">
                     <label>Label Sesi</label>
                     <input type="text" id="label_${idx}" value="${s.label || ''}" placeholder="Sesi 1">
                 </div>
                 <div class="field-group">
-                    <label>Link Grup WhatsApp (${s.jam || 'Sesi'})</label>
+                    <label>Link Grup WA (${jamStr || 'Sesi'})</label>
                     <input type="text" id="wa_${idx}" value="${s.waGroup || ''}" placeholder="https://chat.whatsapp.com/...">
                 </div>
                 <div class="field-group">
                     <label>Biaya (Rp)</label>
                     <input type="number" id="fee_${idx}" value="${s.fee || 5000}">
                 </div>
+                <div class="field-group" style="text-align:center;">
+                    <label>Status Tampil</label>
+                    <button type="button" id="btn_toggle_${idx}" onclick="toggleSessionActive(${idx})" style="width:100%; padding:9px 8px; font-size:11px; font-weight:800; border-radius:8px; border:none; cursor:pointer; background:${isAct ? '#00f076' : '#272d4a'}; color:${isAct ? '#051a0d' : '#8c95b0'};">
+                        ${isAct ? '🟢 AKTIF' : '⚪ SEMBUNYI'}
+                    </button>
+                    <input type="hidden" id="active_${idx}" value="${isAct}">
+                </div>
             `;
             container.appendChild(div);
         });
     }
 
+    function toggleSessionActive(idx) {
+        const input = document.getElementById(`active_${idx}`);
+        const btn = document.getElementById(`btn_toggle_${idx}`);
+        const card = document.getElementById(`session_card_${idx}`);
+        const isCurrentActive = input.value === "true";
+        const newActive = !isCurrentActive;
+        input.value = newActive ? "true" : "false";
+        adminData.sessions[idx].isActive = newActive;
+        
+        if (newActive) {
+            btn.style.background = "#00f076";
+            btn.style.color = "#051a0d";
+            btn.innerText = "🟢 AKTIF";
+            card.classList.remove("hidden-session");
+        } else {
+            btn.style.background = "#272d4a";
+            btn.style.color = "#8c95b0";
+            btn.innerText = "⚪ SEMBUNYI";
+            card.classList.add("hidden-session");
+        }
+    }
+
+    function toggleAllSessions(status) {
+        adminData.sessions.forEach((s, idx) => {
+            s.isActive = status;
+            const input = document.getElementById(`active_${idx}`);
+            const btn = document.getElementById(`btn_toggle_${idx}`);
+            const card = document.getElementById(`session_card_${idx}`);
+            if (input && btn && card) {
+                input.value = status ? "true" : "false";
+                if (status) {
+                    btn.style.background = "#00f076";
+                    btn.style.color = "#051a0d";
+                    btn.innerText = "🟢 AKTIF";
+                    card.classList.remove("hidden-session");
+                } else {
+                    btn.style.background = "#272d4a";
+                    btn.style.color = "#8c95b0";
+                    btn.innerText = "⚪ SEMBUNYI";
+                    card.classList.add("hidden-session");
+                }
+            }
+        });
+    }
+
     async function saveSessions() {
         const updated = adminData.sessions.map((s, idx) => {
+            const activeVal = document.getElementById(`active_${idx}`).value === "true";
+            const jamVal = formatJam(document.getElementById(`jam_${idx}`).value.trim());
             return {
                 id: s.id,
-                jam: document.getElementById(`jam_${idx}`).value.trim(),
+                jam: jamVal,
                 label: document.getElementById(`label_${idx}`).value.trim(),
                 waGroup: document.getElementById(`wa_${idx}`).value.trim(),
                 fee: parseInt(document.getElementById(`fee_${idx}`).value) || 5000,
-                maxSlot: s.maxSlot || 18
+                maxSlot: s.maxSlot || 18,
+                isActive: activeVal
             };
         });
 
@@ -582,6 +752,9 @@
             const tr = document.createElement("tr");
             const isLunas = reg.status === "LUNAS";
             const logoHtml = reg.logo ? `<img src="${reg.logo}" alt="Logo">` : '🛡️';
+            const cleanWa = formatWa(reg.captainWa);
+            const dispWa = displayWa(reg.captainWa);
+            const jamDisp = formatJam(reg.sessionJam);
 
             tr.innerHTML = `
                 <td>
@@ -594,8 +767,8 @@
                     </div>
                 </td>
                 <td>${reg.captainNick}</td>
-                <td><a href="https://wa.me/${reg.captainWa.replace(/\D/g,'')}" target="_blank" class="wa-link">📱 ${reg.captainWa}</a></td>
-                <td><span style="color:#00b4d8; font-weight:700;">Jam ${reg.sessionJam || ''}</span></td>
+                <td><a href="https://wa.me/${cleanWa}" target="_blank" class="wa-link">📱 ${dispWa}</a></td>
+                <td><span style="color:#00b4d8; font-weight:700;">Jam ${jamDisp || '-'}</span></td>
                 <td><b style="color:var(--primary);">Rp ${reg.totalNominal.toLocaleString('id-ID')}</b></td>
                 <td>
                     <span class="badge-status ${isLunas ? 'badge-lunas' : 'badge-pending'}">
@@ -625,36 +798,36 @@
 
     async function manualApprove(regId) {
         if (!confirm("Tandai pendaftaran ini sebagai LUNAS manual?")) return;
-        if (GAS_URL) {
-            await fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'manualApprove', regId: regId })
-            });
-        } else {
-            await fetch(`${LOCAL_SERVER}/api/admin/manual-approve`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ regId: regId })
-            });
+        try {
+            if (GAS_URL) {
+                await fetch(`${GAS_URL}?action=manualApprove&regId=${encodeURIComponent(regId)}`);
+            } else {
+                await fetch(`${LOCAL_SERVER}/api/admin/manual-approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ regId: regId })
+                });
+            }
+        } catch (e) {
+            console.warn("Manual approve error:", e);
         }
         loadAdminData();
     }
 
     async function deleteReg(regId) {
         if (!confirm("Hapus data pendaftaran tim ini?")) return;
-        if (GAS_URL) {
-            await fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'deleteReg', regId: regId })
-            });
-        } else {
-            await fetch(`${LOCAL_SERVER}/api/admin/delete-reg`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ regId: regId })
-            });
+        try {
+            if (GAS_URL) {
+                await fetch(`${GAS_URL}?action=deleteReg&regId=${encodeURIComponent(regId)}`);
+            } else {
+                await fetch(`${LOCAL_SERVER}/api/admin/delete-reg`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ regId: regId })
+                });
+            }
+        } catch (e) {
+            console.warn("Delete reg error:", e);
         }
         loadAdminData();
     }
@@ -670,8 +843,12 @@
         if (GAS_URL) {
             document.getElementById("inputGasUrl").value = GAS_URL;
         }
-        loadAdminData();
-        setInterval(loadAdminData, 3000);
+        checkLoginState();
+        setInterval(() => {
+            if (sessionStorage.getItem("papihAdminAuth") === "true") {
+                loadAdminData();
+            }
+        }, 3000);
     };
 </script>
 
