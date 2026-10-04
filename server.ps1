@@ -24,7 +24,12 @@ function Get-Database {
 }
 
 function Save-Database($dbObj) {
-    $json = $dbObj | ConvertTo-Json -Depth 10
+    $obj = [ordered]@{
+        sessions = @($dbObj.sessions)
+        registrations = @($dbObj.registrations)
+        notifLogs = @($dbObj.notifLogs)
+    }
+    $json = $obj | ConvertTo-Json -Depth 10
     [System.IO.File]::WriteAllText($dbFile, $json, [System.Text.Encoding]::UTF8)
 }
 
@@ -44,8 +49,10 @@ while ($listener.Server.IsBound) {
     try {
         $client = $listener.AcceptTcpClient()
         $stream = $client.GetStream()
-        $reader = New-Object System.IO.StreamReader($stream, [System.Text.Encoding]::UTF8)
-        $writer = New-Object System.IO.StreamWriter($stream, [System.Text.Encoding]::UTF8)
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        $reader = New-Object System.IO.StreamReader($stream, $utf8NoBom)
+        $writer = New-Object System.IO.StreamWriter($stream, $utf8NoBom)
+        $writer.NewLine = "`r`n"
 
         $reqLine = $reader.ReadLine()
         if (-not $reqLine) { $client.Close(); continue }
